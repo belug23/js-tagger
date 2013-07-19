@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <script src="../build/js-tagger.js"></script>
+        <style>
+            body{
+                background-color: #aaa;
+            }
+            .jstagger_fake_input{
+                border: none;
+                background-color: transparent;
+            }
+
+            .jstagger_fake_input:focus{
+                outline: 0;
+            }
+            .jstagger_wrapper{
+                padding: 1px 0px;
+                -webkit-appearance: textfield;
+                background-color: white;
+                border: 2px inset;
+            }
+
+            .jstagger_tag{
+                background: #e2e6f0;
+                border: 1px solid #9daccc;
+                -webkit-border-radius: 2px;
+                color: #1c2a47;
+                cursor: default;
+                display: block;
+                float: left;
+                height: 14px;
+                margin: 0 4px 4px 0;
+                padding: 0 3px;
+                position: relative;
+                white-space: nowrap;
+            }
+        </style>
+    </head>
+    <body>
+        <input id="tag_test" />
+        <script>
+            new JSTagger("tag_test");
+        </script>
+    </body>
+</html>
