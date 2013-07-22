@@ -34,12 +34,18 @@
                 position: relative;
                 white-space: nowrap;
             }
+            .jstagger_close_btn{
+                height: 16px;
+                width: 16px;
+                background: transparent url("img/icon_close.png");
+            }
+                
         </style>
     </head>
     <body>
         <input id="tag_test" />
         <script>
-            new JSTagger("tag_test");
+            tagger = new JSTagger("tag_test");
         </script>
     </body>
 </html>

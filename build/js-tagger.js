@@ -50,6 +50,12 @@ JSTagger = (function() {
     return this.wrapper.insertBefore(this.tagArea, this.tagField);
   };
 
+  JSTagger.prototype.createCloseBtn = function() {
+    this.closeBtn = document.createElement('img');
+    this.closeBtn.src = "img/blank.gif";
+    return this.closeBtn.className = "jstagger_close_btn";
+  };
+
   JSTagger.prototype.createFakeInput = function() {
     this.fakeInput = document.createElement('input');
     this.fakeInput.id = this.fieldId + "_fake_input";
@@ -61,6 +67,7 @@ JSTagger = (function() {
     this.getFieldById();
     this.fieldWrap();
     this.createTagArea();
+    this.createCloseBtn();
     this.createFakeInput();
     this.fieldAddListener();
     return this.tagField.style.display = "none";
@@ -68,6 +75,17 @@ JSTagger = (function() {
 
   JSTagger.prototype.trimTag = function(str) {
     return str.replace(/^\s+|\s+$/g, '');
+  };
+
+  JSTagger.prototype.populateTagField = function() {
+    var tag, tagNames, _i, _len, _ref;
+    tagNames = [];
+    _ref = this.tagArea.children;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      tag = _ref[_i];
+      tagNames.push(tag.innerText);
+    }
+    return this.tagField.value = tagNames.join(", ");
   };
 
   JSTagger.prototype.fakeInputKeyPressed = function(e) {
@@ -79,8 +97,9 @@ JSTagger = (function() {
       this.fakeInput.value = "";
       tagSpan = document.createElement('span');
       tagSpan.className = "jstagger_tag";
-      tagSpan.innerHTML = tagStr;
-      this.wrapper.insertBefore(tagSpan, this.fakeInput);
+      tagSpan.innerText = tagStr;
+      tagSpan.appendChild(this.closeBtn.cloneNode());
+      this.tagArea.appendChild(tagSpan);
       this.tagField.value += (this.tagField.value === "" ? "" : ", ") + tagStr;
       return this.fakeInput.focus();
     }
@@ -92,9 +111,14 @@ JSTagger = (function() {
     console.log(e.target);
     if (e.target.tagName === "SPAN" && e.target.className.indexOf("jstagger_tag") >= 0) {
       console.log('span clicked');
-      this.fakeInput.value = e.target.innerHTML;
+      this.fakeInput.value = e.target.innerText;
       e.target.remove();
     }
+    if (e.target.tagName === "IMG" && e.target.className.indexOf("jstagger_close_btn") >= 0) {
+      console.log('span clicked');
+      e.target.parentNode.remove();
+    }
+    this.populateTagField();
     return this.fakeInput.focus();
   };
 

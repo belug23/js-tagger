@@ -37,6 +37,11 @@ class JSTagger
         @tagArea = document.createElement('span')
         @tagArea.id = @fieldId+"_tag_area"
         @wrapper.insertBefore(@tagArea, @tagField)
+    
+    createCloseBtn: ->
+        @closeBtn = document.createElement('img')
+        @closeBtn.src = "img/blank.gif"
+        @closeBtn.className = "jstagger_close_btn"
 
     createFakeInput: ->
         @fakeInput = document.createElement('input')
@@ -48,12 +53,20 @@ class JSTagger
         @getFieldById()
         @fieldWrap()
         @createTagArea()
+        @createCloseBtn()
         @createFakeInput()
         @fieldAddListener()
         @tagField.style.display = "none"
 
     trimTag: (str)->
         str.replace /^\s+|\s+$/g, ''
+        
+    populateTagField: ->
+        tagNames = []
+        for tag in @tagArea.children
+            tagNames.push(tag.innerText)
+            
+        @tagField.value = tagNames.join(", ")
 
 
     #Events
@@ -65,8 +78,9 @@ class JSTagger
             @fakeInput.value = ""
             tagSpan = document.createElement 'span'
             tagSpan.className = "jstagger_tag"
-            tagSpan.innerHTML = tagStr
-            @wrapper.insertBefore tagSpan, @fakeInput
+            tagSpan.innerText = tagStr
+            tagSpan.appendChild @closeBtn.cloneNode()
+            @tagArea.appendChild tagSpan
             @tagField.value += (if @tagField.value == "" then "" else ", ") + tagStr
             @fakeInput.focus()
 
@@ -76,9 +90,16 @@ class JSTagger
         console.log(e.target)
         if e.target.tagName == "SPAN" && e.target.className.indexOf("jstagger_tag") >= 0
             console.log('span clicked')
-            @fakeInput.value = e.target.innerHTML
+            @fakeInput.value = e.target.innerText
             e.target.remove()
+        
+        if e.target.tagName == "IMG" && e.target.className.indexOf("jstagger_close_btn") >= 0
+            console.log('span clicked')
+            e.target.parentNode.remove()
+        
+        @populateTagField()
         @fakeInput.focus()
+        
 
 
 
