@@ -13,14 +13,20 @@ JSTagger = (function() {
 
   JSTagger.prototype.fieldAddListener = function() {
     var self;
+    self = this;
     if (this.fakeInput.addEventListener) {
-      self = this;
-      return this.fakeInput.addEventListener('keypress', function(e) {
+      this.fakeInput.addEventListener('keypress', function(e) {
         return self.fakeInputKeyPressed(e);
       }, false);
+      return this.wrapper.addEventListener('click', function(e) {
+        return self.wrapperClicked(e);
+      }, false);
     } else if (this.fakeInput.attachEvent) {
-      return this.fakeInput.attachEvent('keypress', function() {
-        return this.fakeInputKeyPressed;
+      this.fakeInput.attachEvent('keypress', function(e) {
+        return self.fakeInputKeyPressed(e);
+      });
+      return this.fakeInput.attachEvent('click', function(e) {
+        return self.wrapperClicked(e);
       });
     }
   };
@@ -76,9 +82,20 @@ JSTagger = (function() {
       tagSpan.innerHTML = tagStr;
       this.wrapper.insertBefore(tagSpan, this.fakeInput);
       this.tagField.value += (this.tagField.value === "" ? "" : ", ") + tagStr;
-      this.fakeInput.focus();
-      return console.log(this.wrapper);
+      return this.fakeInput.focus();
     }
+  };
+
+  JSTagger.prototype.wrapperClicked = function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log(e.target);
+    if (e.target.tagName === "SPAN" && e.target.className.indexOf("jstagger_tag") >= 0) {
+      console.log('span clicked');
+      this.fakeInput.value = e.target.innerHTML;
+      e.target.remove();
+    }
+    return this.fakeInput.focus();
   };
 
   return JSTagger;

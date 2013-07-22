@@ -6,13 +6,21 @@ class JSTagger
         @tagField = document.getElementById(@fieldId)
 
     fieldAddListener: ->
+        self = @
         if @fakeInput.addEventListener
-            self = @
             @fakeInput.addEventListener('keypress', (e) ->
                 self.fakeInputKeyPressed(e)
             , false);
+            @wrapper.addEventListener('click', (e) ->
+                self.wrapperClicked(e)
+            , false);
         else if @fakeInput.attachEvent
-            @fakeInput.attachEvent('keypress', () -> @fakeInputKeyPressed);
+            @fakeInput.attachEvent('keypress', (e) ->
+                self.fakeInputKeyPressed(e)
+            );
+            @fakeInput.attachEvent('click', (e) ->
+                self.wrapperClicked(e)
+            );
 
     fieldWrap: ->
         @createWrapper()
@@ -61,7 +69,16 @@ class JSTagger
             @wrapper.insertBefore tagSpan, @fakeInput
             @tagField.value += (if @tagField.value == "" then "" else ", ") + tagStr
             @fakeInput.focus()
-            console.log @wrapper
+
+    wrapperClicked: (e) ->
+        e.stopPropagation()
+        e.preventDefault()
+        console.log(e.target)
+        if e.target.tagName == "SPAN" && e.target.className.indexOf("jstagger_tag") >= 0
+            console.log('span clicked')
+            @fakeInput.value = e.target.innerHTML
+            e.target.remove()
+        @fakeInput.focus()
 
 
 
