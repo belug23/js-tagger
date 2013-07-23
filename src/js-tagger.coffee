@@ -7,18 +7,18 @@ class JSTagger
 
     fieldAddListener: ->
         self = @
-        if @fakeInput.addEventListener
-            @fakeInput.addEventListener('keypress', (e) ->
-                self.fakeInputKeyPressed(e)
+        if @tempInput.addEventListener
+            @tempInput.addEventListener('keypress', (e) ->
+                self.tempInputKeyPressed(e)
             , false);
             @wrapper.addEventListener('click', (e) ->
                 self.wrapperClicked(e)
             , false);
-        else if @fakeInput.attachEvent
-            @fakeInput.attachEvent('keypress', (e) ->
-                self.fakeInputKeyPressed(e)
+        else if @tempInput.attachEvent
+            @tempInput.attachEvent('keypress', (e) ->
+                self.tempInputKeyPressed(e)
             );
-            @fakeInput.attachEvent('click', (e) ->
+            @tempInput.attachEvent('click', (e) ->
                 self.wrapperClicked(e)
             );
 
@@ -37,69 +37,98 @@ class JSTagger
         @tagArea = document.createElement('span')
         @tagArea.id = @fieldId+"_tag_area"
         @wrapper.insertBefore(@tagArea, @tagField)
-    
+
     createCloseBtn: ->
         @closeBtn = document.createElement('img')
         @closeBtn.src = "img/blank.gif"
         @closeBtn.className = "jstagger_close_btn"
 
-    createFakeInput: ->
-        @fakeInput = document.createElement('input')
-        @fakeInput.id = @fieldId+"_fake_input"
-        @fakeInput.className = "jstagger_fake_input"
-        @wrapper.insertBefore(@fakeInput, @tagField)
+    createtempInput: ->
+        @tempInput = document.createElement('input')
+        @tempInput.id = @fieldId+"_temp_input"
+        @tempInput.className = "jstagger_temp_input"
+        @wrapper.insertBefore(@tempInput, @tagField)
 
     setupField: ->
         @getFieldById()
         @fieldWrap()
         @createTagArea()
         @createCloseBtn()
-        @createFakeInput()
+        @createtempInput()
         @fieldAddListener()
         @tagField.style.display = "none"
 
     trimTag: (str)->
         str.replace /^\s+|\s+$/g, ''
-        
+
     populateTagField: ->
         tagNames = []
         for tag in @tagArea.children
             tagNames.push(tag.innerText)
-            
+
         @tagField.value = tagNames.join(", ")
+
+    measureText: (text) ->
+        sizeDiv = document.createElement 'div'
+        document.body.appendChild(sizeDiv);
+        if window.getComputedStyle
+            sizeDiv.style = window.getComputedStyle(@tempInput)
+        else
+            sizeDiv.style = @tempInput.style
+
+        sizeDiv.style.position = "absolute"
+        sizeDiv.style.left = -1000
+        sizeDiv.style.top = -1000
+
+        sizeDiv.innerHTML = text
+        width = sizeDiv.clientWidth
+
+        document.body.removeChild(sizeDiv)
+        sizeDiv = null
+
+        return width+1
+
+    resizeInput: (charCode = null) ->
+        text = @tempInput.value
+        if charCode
+            text += String.fromCharCode(charCode)
+        text = text.replace(/\W/g,"_")
+        @tempInput.style.width = @measureText(text)+"px"
 
 
     #Events
-    fakeInputKeyPressed: (e) ->
+    tempInputKeyPressed: (e) ->
         if e.keyCode == 44
             e.stopPropagation()
             e.preventDefault()
-            tagStr = @trimTag @fakeInput.value
-            @fakeInput.value = ""
-            tagSpan = document.createElement 'span'
-            tagSpan.className = "jstagger_tag"
-            tagSpan.innerText = tagStr
-            tagSpan.appendChild @closeBtn.cloneNode()
-            @tagArea.appendChild tagSpan
-            @tagField.value += (if @tagField.value == "" then "" else ", ") + tagStr
-            @fakeInput.focus()
+            if @tempInput.value != ""
+                tagStr = @trimTag @tempInput.value
+                @tempInput.value = ""
+                tagSpan = document.createElement 'span'
+                tagSpan.className = "jstagger_tag"
+                tagSpan.innerText = tagStr
+                tagSpan.appendChild @closeBtn.cloneNode()
+                @tagArea.appendChild tagSpan
+                @populateTagField()
+                @tempInput.focus()
+        @resizeInput(e.charCode)
+
 
     wrapperClicked: (e) ->
         e.stopPropagation()
         e.preventDefault()
-        console.log(e.target)
         if e.target.tagName == "SPAN" && e.target.className.indexOf("jstagger_tag") >= 0
-            console.log('span clicked')
-            @fakeInput.value = e.target.innerText
+            @tempInput.value = e.target.innerText
             e.target.remove()
-        
+
         if e.target.tagName == "IMG" && e.target.className.indexOf("jstagger_close_btn") >= 0
             console.log('span clicked')
             e.target.parentNode.remove()
-        
+
         @populateTagField()
-        @fakeInput.focus()
-        
+        @resizeInput()
+        @tempInput.focus()
+
 
 
 

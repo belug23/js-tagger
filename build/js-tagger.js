@@ -14,18 +14,18 @@ JSTagger = (function() {
   JSTagger.prototype.fieldAddListener = function() {
     var self;
     self = this;
-    if (this.fakeInput.addEventListener) {
-      this.fakeInput.addEventListener('keypress', function(e) {
-        return self.fakeInputKeyPressed(e);
+    if (this.tempInput.addEventListener) {
+      this.tempInput.addEventListener('keypress', function(e) {
+        return self.tempInputKeyPressed(e);
       }, false);
       return this.wrapper.addEventListener('click', function(e) {
         return self.wrapperClicked(e);
       }, false);
-    } else if (this.fakeInput.attachEvent) {
-      this.fakeInput.attachEvent('keypress', function(e) {
-        return self.fakeInputKeyPressed(e);
+    } else if (this.tempInput.attachEvent) {
+      this.tempInput.attachEvent('keypress', function(e) {
+        return self.tempInputKeyPressed(e);
       });
-      return this.fakeInput.attachEvent('click', function(e) {
+      return this.tempInput.attachEvent('click', function(e) {
         return self.wrapperClicked(e);
       });
     }
@@ -56,11 +56,11 @@ JSTagger = (function() {
     return this.closeBtn.className = "jstagger_close_btn";
   };
 
-  JSTagger.prototype.createFakeInput = function() {
-    this.fakeInput = document.createElement('input');
-    this.fakeInput.id = this.fieldId + "_fake_input";
-    this.fakeInput.className = "jstagger_fake_input";
-    return this.wrapper.insertBefore(this.fakeInput, this.tagField);
+  JSTagger.prototype.createtempInput = function() {
+    this.tempInput = document.createElement('input');
+    this.tempInput.id = this.fieldId + "_temp_input";
+    this.tempInput.className = "jstagger_temp_input";
+    return this.wrapper.insertBefore(this.tempInput, this.tagField);
   };
 
   JSTagger.prototype.setupField = function() {
@@ -68,7 +68,7 @@ JSTagger = (function() {
     this.fieldWrap();
     this.createTagArea();
     this.createCloseBtn();
-    this.createFakeInput();
+    this.createtempInput();
     this.fieldAddListener();
     return this.tagField.style.display = "none";
   };
@@ -88,30 +88,63 @@ JSTagger = (function() {
     return this.tagField.value = tagNames.join(", ");
   };
 
-  JSTagger.prototype.fakeInputKeyPressed = function(e) {
+  JSTagger.prototype.measureText = function(text) {
+    var sizeDiv, width;
+    sizeDiv = document.createElement('div');
+    document.body.appendChild(sizeDiv);
+    if (window.getComputedStyle) {
+      sizeDiv.style = window.getComputedStyle(this.tempInput);
+    } else {
+      sizeDiv.style = this.tempInput.style;
+    }
+    sizeDiv.style.position = "absolute";
+    sizeDiv.style.left = -1000;
+    sizeDiv.style.top = -1000;
+    sizeDiv.innerHTML = text;
+    width = sizeDiv.clientWidth;
+    document.body.removeChild(sizeDiv);
+    sizeDiv = null;
+    return width + 1;
+  };
+
+  JSTagger.prototype.resizeInput = function(charCode) {
+    var text;
+    if (charCode == null) {
+      charCode = null;
+    }
+    text = this.tempInput.value;
+    if (charCode) {
+      text += String.fromCharCode(charCode);
+    }
+    text = text.replace(/\W/g, "_");
+    return this.tempInput.style.width = this.measureText(text) + "px";
+  };
+
+  JSTagger.prototype.tempInputKeyPressed = function(e) {
     var tagSpan, tagStr;
     if (e.keyCode === 44) {
       e.stopPropagation();
       e.preventDefault();
-      tagStr = this.trimTag(this.fakeInput.value);
-      this.fakeInput.value = "";
-      tagSpan = document.createElement('span');
-      tagSpan.className = "jstagger_tag";
-      tagSpan.innerText = tagStr;
-      tagSpan.appendChild(this.closeBtn.cloneNode());
-      this.tagArea.appendChild(tagSpan);
-      this.tagField.value += (this.tagField.value === "" ? "" : ", ") + tagStr;
-      return this.fakeInput.focus();
+      if (this.tempInput.value !== "") {
+        tagStr = this.trimTag(this.tempInput.value);
+        this.tempInput.value = "";
+        tagSpan = document.createElement('span');
+        tagSpan.className = "jstagger_tag";
+        tagSpan.innerText = tagStr;
+        tagSpan.appendChild(this.closeBtn.cloneNode());
+        this.tagArea.appendChild(tagSpan);
+        this.populateTagField();
+        this.tempInput.focus();
+      }
     }
+    return this.resizeInput(e.charCode);
   };
 
   JSTagger.prototype.wrapperClicked = function(e) {
     e.stopPropagation();
     e.preventDefault();
-    console.log(e.target);
     if (e.target.tagName === "SPAN" && e.target.className.indexOf("jstagger_tag") >= 0) {
-      console.log('span clicked');
-      this.fakeInput.value = e.target.innerText;
+      this.tempInput.value = e.target.innerText;
       e.target.remove();
     }
     if (e.target.tagName === "IMG" && e.target.className.indexOf("jstagger_close_btn") >= 0) {
@@ -119,7 +152,8 @@ JSTagger = (function() {
       e.target.parentNode.remove();
     }
     this.populateTagField();
-    return this.fakeInput.focus();
+    this.resizeInput();
+    return this.tempInput.focus();
   };
 
   return JSTagger;

@@ -5,41 +5,52 @@
             body{
                 background-color: #aaa;
             }
-            .jstagger_fake_input{
+
+            .jstagger_temp_input{
                 border: none;
                 background-color: transparent;
             }
 
-            .jstagger_fake_input:focus{
+            .jstagger_temp_input:focus{
                 outline: 0;
             }
+
             .jstagger_wrapper{
-                padding: 1px 0px;
+                -moz-appearance: textfield;
                 -webkit-appearance: textfield;
                 background-color: white;
-                border: 2px inset;
+                background-color: -moz-field;
+                border: 1px solid darkgray;
+                box-shadow: 1px 1px 1px 0 lightgray inset;
+                font: -moz-field;
+                font: -webkit-small-control;
+                margin-top: 5px;
+                padding: 2px 3px;
+                width: 398px;
             }
 
             .jstagger_tag{
-                background: #e2e6f0;
+                background: #bCd0f7;
                 border: 1px solid #9daccc;
                 -webkit-border-radius: 2px;
+                -moz-border-radius: 2px;
+                border-radius: 2px;
                 color: #1c2a47;
                 cursor: default;
-                display: block;
-                float: left;
-                height: 14px;
+                display: inline-block;
+                height: 20px;
                 margin: 0 4px 4px 0;
                 padding: 0 3px;
                 position: relative;
                 white-space: nowrap;
             }
+
             .jstagger_close_btn{
-                height: 16px;
-                width: 16px;
-                background: transparent url("img/icon_close.png");
+                margin: 2px 0px 0px 2px;
+                height: 14px;
+                width: 14px;
+                background: transparent url("img/icon_close.png") no-repeat;
             }
-                
         </style>
     </head>
     <body>
