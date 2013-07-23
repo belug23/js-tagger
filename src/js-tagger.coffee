@@ -104,11 +104,12 @@ class JSTagger
         text = text.replace(/\W/g,"_")
         @tempInput.style.width = @measureText(text)+"px"
 
-    addTag: (tagStr)->
-        if @tempInput.value != "" and tagStr == null
+    addTag: (tagStr = "")->
+        if @tempInput.value != "" and tagStr == ""
             tagStr = @trimTag @tempInput.value
             @tempInput.value = ""
         if tagStr != ""
+            console.log(tagStr)
             tagSpan = document.createElement 'span'
             tagSpan.className = "jstagger_tag"
             tagSpan.innerText = tagStr

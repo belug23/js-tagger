@@ -133,11 +133,15 @@ JSTagger = (function() {
 
   JSTagger.prototype.addTag = function(tagStr) {
     var tagSpan;
-    if (this.tempInput.value !== "" && tagStr === null) {
+    if (tagStr == null) {
+      tagStr = "";
+    }
+    if (this.tempInput.value !== "" && tagStr === "") {
       tagStr = this.trimTag(this.tempInput.value);
       this.tempInput.value = "";
     }
     if (tagStr !== "") {
+      console.log(tagStr);
       tagSpan = document.createElement('span');
       tagSpan.className = "jstagger_tag";
       tagSpan.innerText = tagStr;
