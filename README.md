@@ -20,4 +20,8 @@ Activate the plugin:
     
 Now your your input should be a tag field with each tags in a box:
 
-*include demo image here*
+<exemple.png>
+![Exemple of the render](exemple.png)
+
+
+CSS given with this package should be rewriten to match your website style
