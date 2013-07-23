@@ -123,9 +123,6 @@ JSTagger = (function() {
 
   JSTagger.prototype.resizeInput = function(charCode) {
     var text;
-    if (charCode == null) {
-      charCode = null;
-    }
     text = this.tempInput.value;
     if (charCode) {
       text += String.fromCharCode(charCode);

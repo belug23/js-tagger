@@ -97,7 +97,7 @@ class JSTagger
 
         return width+1
 
-    resizeInput: (charCode = null) ->
+    resizeInput: (charCode) ->
         text = @tempInput.value
         if charCode
             text += String.fromCharCode(charCode)
