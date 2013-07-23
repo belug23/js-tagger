@@ -70,13 +70,21 @@ JSTagger = (function() {
   };
 
   JSTagger.prototype.setupField = function() {
+    var tag, tags, _i, _len, _results;
     this.getFieldById();
     this.fieldWrap();
     this.createTagArea();
     this.createCloseBtn();
     this.createtempInput();
     this.fieldAddListener();
-    return this.tagField.style.display = "none";
+    this.tagField.style.display = "none";
+    tags = this.tagField.value.split(',');
+    _results = [];
+    for (_i = 0, _len = tags.length; _i < _len; _i++) {
+      tag = tags[_i];
+      _results.push(this.addTag(tag.trim()));
+    }
+    return _results;
   };
 
   JSTagger.prototype.trimTag = function(str) {
@@ -126,11 +134,16 @@ JSTagger = (function() {
     return this.tempInput.style.width = this.measureText(text) + "px";
   };
 
-  JSTagger.prototype.addTag = function() {
-    var tagSpan, tagStr;
-    if (this.tempInput.value !== "") {
+  JSTagger.prototype.addTag = function(tagStr) {
+    var tagSpan;
+    if (tagStr == null) {
+      tagStr = null;
+    }
+    if (this.tempInput.value !== "" && tagStr === null) {
       tagStr = this.trimTag(this.tempInput.value);
       this.tempInput.value = "";
+    }
+    if (tagStr !== "") {
       tagSpan = document.createElement('span');
       tagSpan.className = "jstagger_tag";
       tagSpan.innerText = tagStr;
@@ -145,7 +158,7 @@ JSTagger = (function() {
     if (e.keyCode === 44) {
       e.stopPropagation();
       e.preventDefault();
-      this.addTag;
+      this.addTag();
     }
     return this.resizeInput(e.charCode);
   };

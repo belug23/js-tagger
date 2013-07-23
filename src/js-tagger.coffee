@@ -63,6 +63,9 @@ class JSTagger
         @createtempInput()
         @fieldAddListener()
         @tagField.style.display = "none"
+        tags =  @tagField.value.split(',')
+        for tag in tags
+            @addTag tag.trim()
 
     trimTag: (str)->
         str.replace /^\s+|\s+$/g, ''
@@ -101,10 +104,11 @@ class JSTagger
         text = text.replace(/\W/g,"_")
         @tempInput.style.width = @measureText(text)+"px"
 
-    addTag: ->
-        if @tempInput.value != ""
+    addTag: (tagStr = null)->
+        if @tempInput.value != "" and tagStr == null
             tagStr = @trimTag @tempInput.value
             @tempInput.value = ""
+        if tagStr != ""
             tagSpan = document.createElement 'span'
             tagSpan.className = "jstagger_tag"
             tagSpan.innerText = tagStr
@@ -119,7 +123,7 @@ class JSTagger
         if e.keyCode == 44
             e.stopPropagation()
             e.preventDefault()
-            @addTag
+            @addTag()
         @resizeInput(e.charCode)
 
 
