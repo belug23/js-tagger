@@ -11,12 +11,18 @@ class JSTagger
             @tempInput.addEventListener('keypress', (e) ->
                 self.tempInputKeyPressed(e)
             , false);
+            @tempInput.addEventListener('blur', (e) ->
+                self.addTag()
+            , false);
             @wrapper.addEventListener('click', (e) ->
                 self.wrapperClicked(e)
             , false);
         else if @tempInput.attachEvent
             @tempInput.attachEvent('keypress', (e) ->
                 self.tempInputKeyPressed(e)
+            );
+            @tempInput.attachEvent('blur', (e) ->
+                self.addTag()
             );
             @tempInput.attachEvent('click', (e) ->
                 self.wrapperClicked(e)
@@ -95,22 +101,25 @@ class JSTagger
         text = text.replace(/\W/g,"_")
         @tempInput.style.width = @measureText(text)+"px"
 
+    addTag: ->
+        if @tempInput.value != ""
+            tagStr = @trimTag @tempInput.value
+            @tempInput.value = ""
+            tagSpan = document.createElement 'span'
+            tagSpan.className = "jstagger_tag"
+            tagSpan.innerText = tagStr
+            tagSpan.appendChild @closeBtn.cloneNode()
+            @tagArea.appendChild tagSpan
+            @populateTagField()
+            @tempInput.focus()
+
 
     #Events
     tempInputKeyPressed: (e) ->
         if e.keyCode == 44
             e.stopPropagation()
             e.preventDefault()
-            if @tempInput.value != ""
-                tagStr = @trimTag @tempInput.value
-                @tempInput.value = ""
-                tagSpan = document.createElement 'span'
-                tagSpan.className = "jstagger_tag"
-                tagSpan.innerText = tagStr
-                tagSpan.appendChild @closeBtn.cloneNode()
-                @tagArea.appendChild tagSpan
-                @populateTagField()
-                @tempInput.focus()
+            @addTag
         @resizeInput(e.charCode)
 
 

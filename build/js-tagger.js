@@ -18,12 +18,18 @@ JSTagger = (function() {
       this.tempInput.addEventListener('keypress', function(e) {
         return self.tempInputKeyPressed(e);
       }, false);
+      this.tempInput.addEventListener('blur', function(e) {
+        return self.addTag();
+      }, false);
       return this.wrapper.addEventListener('click', function(e) {
         return self.wrapperClicked(e);
       }, false);
     } else if (this.tempInput.attachEvent) {
       this.tempInput.attachEvent('keypress', function(e) {
         return self.tempInputKeyPressed(e);
+      });
+      this.tempInput.attachEvent('blur', function(e) {
+        return self.addTag();
       });
       return this.tempInput.attachEvent('click', function(e) {
         return self.wrapperClicked(e);
@@ -120,22 +126,26 @@ JSTagger = (function() {
     return this.tempInput.style.width = this.measureText(text) + "px";
   };
 
-  JSTagger.prototype.tempInputKeyPressed = function(e) {
+  JSTagger.prototype.addTag = function() {
     var tagSpan, tagStr;
+    if (this.tempInput.value !== "") {
+      tagStr = this.trimTag(this.tempInput.value);
+      this.tempInput.value = "";
+      tagSpan = document.createElement('span');
+      tagSpan.className = "jstagger_tag";
+      tagSpan.innerText = tagStr;
+      tagSpan.appendChild(this.closeBtn.cloneNode());
+      this.tagArea.appendChild(tagSpan);
+      this.populateTagField();
+      return this.tempInput.focus();
+    }
+  };
+
+  JSTagger.prototype.tempInputKeyPressed = function(e) {
     if (e.keyCode === 44) {
       e.stopPropagation();
       e.preventDefault();
-      if (this.tempInput.value !== "") {
-        tagStr = this.trimTag(this.tempInput.value);
-        this.tempInput.value = "";
-        tagSpan = document.createElement('span');
-        tagSpan.className = "jstagger_tag";
-        tagSpan.innerText = tagStr;
-        tagSpan.appendChild(this.closeBtn.cloneNode());
-        this.tagArea.appendChild(tagSpan);
-        this.populateTagField();
-        this.tempInput.focus();
-      }
+      this.addTag;
     }
     return this.resizeInput(e.charCode);
   };
