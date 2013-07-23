@@ -133,9 +133,6 @@ JSTagger = (function() {
 
   JSTagger.prototype.addTag = function(tagStr) {
     var tagSpan;
-    if (tagStr == null) {
-      tagStr = null;
-    }
     if (this.tempInput.value !== "" && tagStr === null) {
       tagStr = this.trimTag(this.tempInput.value);
       this.tempInput.value = "";

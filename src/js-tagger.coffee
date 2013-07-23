@@ -104,7 +104,7 @@ class JSTagger
         text = text.replace(/\W/g,"_")
         @tempInput.style.width = @measureText(text)+"px"
 
-    addTag: (tagStr = null)->
+    addTag: (tagStr)->
         if @tempInput.value != "" and tagStr == null
             tagStr = @trimTag @tempInput.value
             @tempInput.value = ""
